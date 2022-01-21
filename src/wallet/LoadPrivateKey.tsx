@@ -147,7 +147,7 @@ class LoadPrivateKey extends React.Component<LoadPrivateKeyProps, State> {
         <Card >
           <CardItem styleNames='header'>
             <Body style={{...styles.row, paddingLeft: 0, paddingRight: 0 }}>
-              <H2 style={{ flexBasis: 200, paddingBottom: 15 }}>Import or Generate Private Key</H2>
+              <H2 style={{ flexBasis: 200, paddingBottom: 15 }}>Import or Generate your Pandacoin Private Key</H2>
             </Body>
           </CardItem>
           <CardItem>
@@ -158,7 +158,7 @@ class LoadPrivateKey extends React.Component<LoadPrivateKeyProps, State> {
                     <Input 
                       key={1}
                       ref={ref}
-                      placeholder={`Paste WIF or Raw Private Key here` /*, HD Key,*/ }
+                      placeholder={`Paste WIF or Raw Pandacoin Private Key here` /*, HD Key,*/ }
                       style={{ fontSize: 12, lineHeight: 14, minWidth: 200 }}
                       value={pKeyInput}
                       onChangeText={privateKey => this.processKeyChange(privateKey)}/>,
