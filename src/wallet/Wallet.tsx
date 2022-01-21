@@ -15,7 +15,7 @@ import WalletKeys, { UnlockThenCopy } from './Keys'
 function Balance({ balance, ...props }) {
   return (
     <View {...props}>
-      <H2>{balance.toLocaleString('en')} PPC</H2>
+      <H2>{balance.toLocaleString('en')} PND</H2>
       <Text styleNames='note'>balance</Text>
     </View>
   )
