@@ -51,7 +51,7 @@ namespace Configuration {
     return { from, fromEnv }
   }
 
-  export const network = validator<Network>('network', [ 'MAINNET', 'TESTNET' ], 'TESTNET')
+  export const network = validator<Network>('network', [ 'MAINNET', 'TESTNET' ], 'MAINNET')
   export const deploymentMode = validator<DeploymentMode>('network', [ 'PRODUCTION', 'TESTING' ], 'PRODUCTION')
   export const keyGenerator = validator<KeyGenerator>('key_generator', [ 'SINGLETON', 'HD' ], 'SINGLETON')
   export const nodeEnv = validator<NodeEnv>('NODE_ENV', [ 'PRODUCTION', 'DEVELOPMENT' ], 'DEVELOPMENT')
