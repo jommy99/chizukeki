@@ -75,7 +75,7 @@ class WalletTransaction extends React.PureComponent<TransactionProps> {
         type={type}
         amount={totalAmount}
         {...item}
-        asset={<Text>PPC <AssetAction assetAction={item.assetAction}/></Text>}>
+        asset={<Text>PND <AssetAction assetAction={item.assetAction}/></Text>}>
         <TransactionDetails type={type} amount={amount} {...item} />
       </Transaction>
     )
