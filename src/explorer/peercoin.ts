@@ -227,14 +227,14 @@ async function defaultOnError<T>(p: Promise<T>, def: T){
 }
 
 class PeercoinExplorer {
-  explorerUrl = `https://${ configure.fromEnv().NETWORK === 'TESTNET' ? 'testnet-' : '' }explorer.peercoin.net`
+  explorerUrl = `https://${ configure.fromEnv().NETWORK === 'TESTNET' ? 'testnet-' : '' }explorer.thepandacoin.net`
   rawApiRequest(call: ApiCalls.Coind, query: object){
     return getText(`${this.explorerUrl}/api/${call}?${stringifyQuery(query)}`)
   }
-  apiRequest<T = any>(call: ApiCalls.Coind, query: object, errorMessage = `PeercoinExplorer.api.${call} request returned empty`){
+  apiRequest<T = any>(call: ApiCalls.Coind, query: object, errorMessage = `PandacoinExplorer.api.${call} request returned empty`){
     return getJSON<T | Error>(`${this.explorerUrl}/api/${call}?${stringifyQuery(query)}`, errorMessage)
   }
-  extendedRequest<T = any>(call: ApiCalls.Extended, param: string, errorMessage = `PeercoinExplorer.ext.${call} request returned empty`){
+  extendedRequest<T = any>(call: ApiCalls.Extended, param: string, errorMessage = `PandacoinExplorer.ext.${call} request returned empty`){
     return getJSON<T | Error>(`${this.explorerUrl}/ext/${[ call, param ].join('/')}`, errorMessage)
   }
   getBalance = async (address: string) => {
