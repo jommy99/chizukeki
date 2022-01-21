@@ -97,7 +97,7 @@ namespace normalize {
 
 class Cryptoid {
   explorerUrl = 'https://chainz.cryptoid.info'
-  constructor(private key: string = '7547f94398e3', private network: string = 'ppc-test') { }
+  constructor(private key: string = '7547f94398e3', private network: string = 'pnd') { }
   apiRequest<T = any>(call: ApiCalls, query: object){
     let { explorerUrl, network } = this
     return getJSON<T>(`${explorerUrl}/${network}/api.dws?q=${call}&${stringifyQuery(query)}`)
