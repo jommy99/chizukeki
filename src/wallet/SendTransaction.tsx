@@ -91,7 +91,7 @@ class SendTransaction extends React.Component<SendTransaction.Props, State> {
             </Field>
             <Field styleNames='fixedLabel' style={{ marginLeft: 15, minWidth: 300 }}>
               {ref => [
-                <Label key={0}>PPC</Label>,
+                <Label key={0}>PND</Label>,
                 <Input
                   key={1}
                   ref={ref}
