@@ -12,18 +12,19 @@ import addPeerassets from './bitcore-peerassets'
 import configure from '../configure'
 
 //
-// Set peercoin as default network
+// Set pandacoin as default network
 //
 
 bitcore.Networks.add({
-    name: 'peercoin',
-    alias: 'ppcoin',
+    name: 'pandacoin',
+    alias: 'pnd',
     pubkeyhash: 0x37,
     privatekey: 0xb7,
     scripthash: 0x75,
     xpubkey: 0x0488b21e,
     xprivkey: 0x0488ade4,
   });
+// for now peercoin and peercoin testnet no longer function, ppc protocol has changed and timestamp removed...
 
 bitcore.Networks.add({
     name: 'peercoin-testnet',
@@ -50,7 +51,7 @@ var { Input, Output } = bitcore.Transaction
 bitcore.Transaction.prototype.toBufferWriter = function(writer) {
   writer.writeUInt32LE(this.version);
 
-  // ppcoin: if no timestamp present, take current time (in seconds)
+  // pnd: if no timestamp present, take current time (in seconds)
   var timestamp = this.timestamp ? this.timestamp : new Date().getTime()/1000;
   writer.writeUInt32LE(timestamp);
 
@@ -78,7 +79,7 @@ bitcore.Transaction.prototype.fromBufferReader = function(reader) {
 
   this.version = reader.readUInt32LE();
 
-  // ppcoin: deserialize timestamp
+  // pnd: deserialize timestamp
   this.timestamp = reader.readUInt32LE();
 
   sizeTxIns = reader.readVarintNum();
@@ -107,6 +108,6 @@ bitcore.Transaction.prototype.getUnspentOutput = function(outputIndex) {
   });
 }
 
-bitcore.Transaction.FEE_PER_KB = 10000 // 0.01 PPC
+bitcore.Transaction.FEE_PER_KB = 10000000 // 10.0 PND
 
 export default addPeerassets(bitcore, configure.fromEnv().ASSETS)

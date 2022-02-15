@@ -24,9 +24,11 @@ namespace ApiCalls {
     | 'listunspent'
     | 'txinfo'
     | 'getbalance'
+
+  export type gettxExtended = 'gettx'
 }
 
-type ApiCalls = ApiCalls.Coind | ApiCalls.Extended
+type ApiCalls = ApiCalls.Coind | ApiCalls.Extended | ApiCalls.gettxExtended
 
 namespace Unspent {
   export type Output = {
@@ -85,7 +87,30 @@ type RawTransaction = {
 namespace TxInfo {
   export type Input = {
     addresses: string,
-    txid?: string, 
+    txid: string, 
+    amount: Satoshis
+  }
+  export type Output = {
+    script: string,
+    addresses: string,
+    amount: Satoshis
+  }
+
+  export type Response = {
+    hash: string,
+    block: number,
+    timestamp: number,
+    total: Satoshis,
+    inputs: Array<Input>,
+    outputs: Array<Output>,
+  }
+
+}
+
+namespace Gettx {
+  export type Input = {
+    addresses: string,
+    txid: string, 
     amount: Satoshis
   }
   export type Output = {
@@ -227,14 +252,17 @@ async function defaultOnError<T>(p: Promise<T>, def: T){
 }
 
 class PeercoinExplorer {
-  explorerUrl = `https://${ configure.fromEnv().NETWORK === 'TESTNET' ? 'testnet-' : '' }explorer.thepandacoin.net`
+   explorerUrl = `http://45.79.193.237:8088/https://explorer.thepandacoin.net`
   rawApiRequest(call: ApiCalls.Coind, query: object){
     return getText(`${this.explorerUrl}/api/${call}?${stringifyQuery(query)}`)
   }
-  apiRequest<T = any>(call: ApiCalls.Coind, query: object, errorMessage = `PandacoinExplorer.api.${call} request returned empty`){
+  apiRequest<T = any>(call: ApiCalls.Coind, query: object, errorMessage = `PeercoinExplorer.api.${call} request returned empty`){
     return getJSON<T | Error>(`${this.explorerUrl}/api/${call}?${stringifyQuery(query)}`, errorMessage)
   }
-  extendedRequest<T = any>(call: ApiCalls.Extended, param: string, errorMessage = `PandacoinExplorer.ext.${call} request returned empty`){
+  extendedRequest<T = any>(call: ApiCalls.Extended, param: string, errorMessage = `PeercoinExplorer.ext.${call} request returned empty`){
+    return getJSON<T | Error>(`${this.explorerUrl}/ext/${[ call, param ].join('/')}`, errorMessage)
+  }
+  gettxRequest<T = any>(call: ApiCalls.gettxExtended, param: string, errorMessage = `PeercoinExplorer.ext.${call} request returned empty`){
     return getJSON<T | Error>(`${this.explorerUrl}/ext/${[ call, param ].join('/')}`, errorMessage)
   }
   getBalance = async (address: string) => {
@@ -294,7 +322,8 @@ class PeercoinExplorer {
     }
   }
 
-  transactionInfo = (id: string) => this.extendedRequest<TxInfo.Response>('txinfo', id)
+  //transactionInfo = (id: string) => this.extendedRequest<TxInfo.Response>('txinfo', id)
+  transactionInfo = (id: string) => this.gettxRequest<Gettx.Response>('gettx', id)
   getAddress = (address: string) => this.extendedRequest<GetAddress.Response>('getaddress', address)
 
   getRelativeRawTransaction = async (id: string, address?: string): Promise<RawTransaction.Relative | Error> => {
@@ -314,6 +343,8 @@ class PeercoinExplorer {
         'CREDIT'
 
     let addresses = dropRepeats( type === 'CREDIT' ?
+      //JRM
+      //console.log("CREDIT now trying to filter")
       info.inputs.map(o => o.addresses).filter(a => a !== address) :
       info.outputs.map(o => o.addresses).filter(a => a !== address)
     )
@@ -324,7 +355,7 @@ class PeercoinExplorer {
     let inputTotal = info.inputs.reduce((total, i) => plus(total, i.amount), 0)
     let fee = Satoshis.btc.toAmount(minus(inputTotal, info.total))
     inputTotal = Satoshis.btc.toAmount(inputTotal)
-    return Object.assign(raw, { type, fee, inputTotal, addresses, block: info.block })
+      return Object.assign(raw, { type, fee, inputTotal, addresses, block: info.block })
   }
 
   getRelativeTransaction = async (id: string, address: string) => {

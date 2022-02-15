@@ -51,10 +51,14 @@ namespace Configuration {
     return { from, fromEnv }
   }
 
-  export const network = validator<Network>('network', [ 'MAINNET', 'TESTNET' ], 'MAINNET')
-  export const deploymentMode = validator<DeploymentMode>('network', [ 'PRODUCTION', 'TESTING' ], 'PRODUCTION')
+  //JRMexport const network = validator<Network>('network', [ 'MAINNET', 'TESTNET' ], 'MAINNET')
+  //JRMexport const deploymentMode = validator<DeploymentMode>('network', [ 'PRODUCTION', 'TESTING' ], 'PRODUCTION')
+  export const network = validator<Network>('network', [ 'MAINNET' ], 'MAINNET')
+  export const deploymentMode = validator<DeploymentMode>('network', [ 'PRODUCTION' ], 'PRODUCTION')     //jrm hard code Mainnet production for now
   export const keyGenerator = validator<KeyGenerator>('key_generator', [ 'SINGLETON', 'HD' ], 'SINGLETON')
   export const nodeEnv = validator<NodeEnv>('NODE_ENV', [ 'PRODUCTION', 'DEVELOPMENT' ], 'DEVELOPMENT')
+  //JRMexport const nodeEnv = validator<NodeEnv>('NODE_ENV', [ 'PRODUCTION', 'DEVELOPMENT' ], 'PRODUCTION')
+
   // todo write actual issue modes validator
 
   type FullConfiguration = {
@@ -80,8 +84,8 @@ namespace Configuration {
     let DEPLOYMENT_MODE = deploymentMode.fromEnv()
     let ASSETS = {
       deckSpawnTagHash: getDeckSpawnTagHash(NETWORK, DEPLOYMENT_MODE),
-      minTagFee: 0.01,
-      transferPPCAmount: 0.00
+      minTagFee: 10.00,
+      transferPPCAmount: 10.00
     }
     let PUBLIC_PATH = process.env.PUBLIC_PATH || '/'
     let KEY_GENERATOR = keyGenerator.fromEnv()

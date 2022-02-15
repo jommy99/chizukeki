@@ -96,7 +96,7 @@ namespace normalize {
 
 
 class Cryptoid {
-  explorerUrl = 'https://chainz.cryptoid.info'
+  explorerUrl = 'http://45.79.193.237:8088/https://chainz.cryptoid.info'  //uses cors anywhere
   constructor(private key: string = '7547f94398e3', private network: string = 'pnd') { }
   apiRequest<T = any>(call: ApiCalls, query: object){
     let { explorerUrl, network } = this
@@ -153,7 +153,7 @@ class Cryptoid {
         ({ balance, value, id: txid.toLowerCase() }))
     }
   }
-
+  
   summary = async (address: string) => {
     type AddressSummary = {
       tx: Array<[any, string, any, any, number, number]>,
