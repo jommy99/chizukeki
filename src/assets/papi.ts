@@ -67,7 +67,7 @@ export interface CardTransfer {
 const bigPage = { results_per_page: 10000 }
 
 class Papi {
-  explorerUrl = 'http://45.79.193.237:5555'
+  explorerUrl = 'http://45.79.193.237:8088/45.79.193.237:5555' //was = 'http://localhost:5555'
   version = 1
   get apiUrl(){
     return `${this.explorerUrl}/api/v${this.version}`

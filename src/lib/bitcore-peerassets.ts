@@ -4,6 +4,9 @@ import { Buffer } from 'buffer'
 var pb = require('./peerassets_pb');
 
 // P2TH info
+// PND mainnet:
+//PAParams("pandacoin", "pnd", "U5vPmrnvd2tQEmA4K9WJDpPChVxEQqxegnGpGe72rMpaWm9sFZFn",
+//         "PW8RpmJd5A8d8463g2HinboHRkW7mQDvHW",
 // PPC mainnet:
 //  PAprod: PAprodbYvZqf4vjhef49aThB9rSZRxXsM6 - U624wXL6iT7XZ9qeHsrtPGEiU78V1YxDfwq75Mymd61Ch56w47KE
 //  PAtest: PAtesth4QreCwMzXJjYHBcCVKbC4wjbYKP - UAbxMGQQKmfZCwKXAhUQg3MZNXcnSqG5Z6wAJMLNVUAcyJ5yYxLP
@@ -11,9 +14,9 @@ var pb = require('./peerassets_pb');
 //  PAprod: miHhMLaMWubq4Wx6SdTEqZcUHEGp8RKMZt - cTJVuFKuupqVjaQCFLtsJfG8NyEyHZ3vjCdistzitsD2ZapvwYZH
 //  PAtest: mvfR2sSxAfmDaGgPcmdsTwPqzS6R9nM5Bo - cQToBYwzrB3yHr8h7PchBobM3zbrdGKj2LtXqg7NQLuxsHeKJtRL
 function getDeckSpawnTagHash(PPCtestnet = false, PAtest = false) {
-  // Setup the deck spawn tag hash
+  // Setup the deck spawn tag hash for Pandacoin's new specific PAprod
   if (!PPCtestnet && !PAtest)
-    return 'PAprodbYvZqf4vjhef49aThB9rSZRxXsM6'
+    return 'PW8RpmJd5A8d8463g2HinboHRkW7mQDvHW' // PAprod for Pandacoin PND
   else if (!PPCtestnet && PAtest)
     return 'PAtesth4QreCwMzXJjYHBcCVKbC4wjbYKP'
   else if (PPCtestnet && !PAtest)
@@ -23,8 +26,8 @@ function getDeckSpawnTagHash(PPCtestnet = false, PAtest = false) {
 }
 
 const defaultConfig = {
-  minTagFee: 0.01,
-  transferPPCAmount: 0.01,
+  minTagFee: 10.00,     // 10PND
+  txnFee: 10.00,        // 10PND
   deckSpawnTagHash: getDeckSpawnTagHash()
 }
 

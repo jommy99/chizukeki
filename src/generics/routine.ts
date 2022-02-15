@@ -4,7 +4,7 @@ import { put, call, cancelled } from 'redux-saga/effects'
 import actionCreatorFactory, { isType, AnyAction, ActionCreator, AsyncActionCreators } from 'typescript-fsa'
 
 // TODO: not sure why this caused trouble
-// import { bindAsyncAction } from 'typescript-fsa-redux-saga'
+//import { bindAsyncAction } from 'typescript-fsa-redux-saga'
 function bindAsyncAction(
   creator: AsyncActionCreators<any, any, any>,
   throwing: boolean = false

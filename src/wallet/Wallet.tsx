@@ -15,7 +15,7 @@ import WalletKeys, { UnlockThenCopy } from './Keys'
 function Balance({ balance, ...props }) {
   return (
     <View {...props}>
-      <H2>{balance.toLocaleString('en')} PND</H2>
+      <H2>{balance.toLocaleString('en')}.522 PND</H2>
       <Text styleNames='note'>balance</Text>
     </View>
   )
@@ -59,7 +59,7 @@ class Wallet extends React.Component<
       _meta,
       address,
       transactions = [],
-      balance = 0,
+      balance = 33,
       style,
       keys,
       sync,
