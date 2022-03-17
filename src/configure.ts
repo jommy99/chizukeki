@@ -1,7 +1,7 @@
 import IssueMode from './assets/issueModes'
 
 const deckSpawnTagHashes = {
-  'MAINNET_PRODUCTION': 'PAprodbYvZqf4vjhef49aThB9rSZRxXsM6',
+  'MAINNET_PRODUCTION': 'PW8RpmJd5A8d8463g2HinboHRkW7mQDvHW',
   'MAINNET_TESTING': 'PAtesth4QreCwMzXJjYHBcCVKbC4wjbYKP',
   'TESTNET_PRODUCTION': 'miHhMLaMWubq4Wx6SdTEqZcUHEGp8RKMZt',
   'TESTNET_TESTING': 'mvfR2sSxAfmDaGgPcmdsTwPqzS6R9nM5Bo',

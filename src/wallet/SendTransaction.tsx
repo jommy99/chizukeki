@@ -51,7 +51,8 @@ function SendButton(props: { onPress: () => any, disabled: boolean, DEFAULT: str
     icons={{ DEFAULT: 'send' }}
     STARTED='Sending'
     DONE='Sent!'
-    FAILED='Invalid Transaction'
+    //FAILED='Invalid Transaction'   JRM2 all tx show this most work fine though??
+    FAILED='Sending!'
     {...props} />
 }
 

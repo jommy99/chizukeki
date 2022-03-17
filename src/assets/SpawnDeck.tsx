@@ -85,7 +85,7 @@ function SpawnButton({ deck, ...props }: {
     DEFAULT='Spawn Deck'
     STARTED='Spawning'
     DONE='Spawned!'
-    FAILED='Invalid Deck'
+    FAILED='Spawning!'
     {...props} />
 }
 

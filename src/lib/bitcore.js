@@ -36,11 +36,13 @@ bitcore.Networks.add({
     xprivkey: 0x04358394,
   });
 
-bitcore.Networks.defaultNetwork = bitcore.Networks.get(
+bitcore.Networks.defaultNetwork = bitcore.Networks.get('pandacoin');
+
+/*bitcore.Networks.defaultNetwork = bitcore.Networks.get(
   configure.fromEnv().NETWORK === 'TESTNET' ?
     'peercoin-testnet' :
     'peercoin'
-)
+)*/
 
 //
 // Overwrite transaction serialization to include peercoin's timestamp

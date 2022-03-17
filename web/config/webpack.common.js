@@ -26,6 +26,7 @@ module.exports = {
     symlinks: false,
     extensions: [ '*', '.js', '.jsx', '.ts', '.tsx', '.web.ts', '.web.tsx', '.web.js', '.web.jsx' ],
     alias: {
+      'react-native$': 'react-native-web',
       'react-router-native': 'react-router',
       'react-native/Libraries/Renderer/shims/ReactNativePropRegistry': 'react-native-web/dist/modules/ReactNativePropRegistry/index.js',
       'react-native-vector-icons/Fonts': nodeModule('react-native-vector-icons/Fonts'),

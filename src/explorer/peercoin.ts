@@ -3,8 +3,9 @@ import { dropRepeats } from 'ramda'
 import bitcore from '../lib/bitcore'
 import { HTTP, Satoshis } from '../lib/utils'
 import configure from '../configure'
-
+import listunspent from './cryptoid'
 import { Wallet, walletMeta } from './common'
+import cryptoid from './cryptoid'
 
 let { getJSON, getText, stringifyQuery } = HTTP
 
@@ -25,7 +26,8 @@ namespace ApiCalls {
     | 'txinfo'
     | 'getbalance'
 
-  export type gettxExtended = 'gettx'
+  export type gettxExtended = 
+    | 'gettx'
 }
 
 type ApiCalls = ApiCalls.Coind | ApiCalls.Extended | ApiCalls.gettxExtended
@@ -64,7 +66,7 @@ namespace RawTransaction {
     fee?: number
   }
   export type Relative = RawTransaction & {
-    block: number,
+    blockindex: number,
     fee: number,
     type: 'CREDIT' | 'DEBIT' | 'SELF_SEND',
     inputTotal: number,
@@ -98,7 +100,7 @@ namespace TxInfo {
 
   export type Response = {
     hash: string,
-    block: number,
+    blockindex: number,
     timestamp: number,
     total: Satoshis,
     inputs: Array<Input>,
@@ -120,12 +122,12 @@ namespace Gettx {
   }
 
   export type Response = {
-    hash: string,
-    block: number,
+    blockhash: string,
+    blockindex: number,
     timestamp: number,
     total: Satoshis,
-    inputs: Array<Input>,
-    outputs: Array<Output>,
+    vin: Array<Input>,
+    vout: Array<Output>,
   }
 
 }
@@ -179,7 +181,7 @@ namespace normalize {
     return {
       id,
       type,
-      block: raw.block,
+      blockindex: raw.blockindex,
       confirmations,
       addresses,
       amount: Satoshis.toAmount(amount),
@@ -252,7 +254,7 @@ async function defaultOnError<T>(p: Promise<T>, def: T){
 }
 
 class PeercoinExplorer {
-   explorerUrl = `http://45.79.193.237:8088/https://explorer.thepandacoin.net`
+   explorerUrl = `https://pnddev.digitalpandacoin.org:8088/https://explorer.thepandacoin.net`
   rawApiRequest(call: ApiCalls.Coind, query: object){
     return getText(`${this.explorerUrl}/api/${call}?${stringifyQuery(query)}`)
   }
@@ -270,10 +272,10 @@ class PeercoinExplorer {
     return Number(balance)
   }
 
-  listUnspent = async (address: string) => {
-    let { unspent_outputs } = await throwing(this.extendedRequest<Unspent>('listunspent', address))
-    return unspent_outputs.map(normalize.unspentOutput).filter(u => u.amount)
-  }
+  //listUnspent = async (address: string) => {
+    //let { unspent_outputs } = await throwing(this.extendedRequest<Unspent>('listunspent', address))
+    //return unspent_outputs.map(normalize.unspentOutput).filter(u => u.amount)
+  //}
 
   getRawTransaction = (txid: string) => this.apiRequest<RawTransaction>('getrawtransaction', { txid, decrypt: 1 })
 
@@ -284,16 +286,16 @@ class PeercoinExplorer {
     if (response === 'There was an error. Check your console.'){
       throw Error('Invalid Transaction')
     }
-    let { outputs, inputs, ...raw }: {
-      hash: string, outputs: Array<any>, inputs: Array<any>
+    let { vout, vin, ...raw }: {
+      hash: string, vin: Array<any>, vout: Array<any>
     } = bitcore.Transaction(hex).toObject()
     return {
       id: raw.hash,
       timestamp: new Date(),
       raw: {
-        vout: outputs.map(({ satoshis, script, ...txn }, vout) =>
+        vout: vout.map(({ satoshis, script, ...txn }, vout) =>
           ({ ...txn, txid: raw.hash, vout, scriptPubKey: script, amount: Satoshis.toAmount(satoshis) })),
-        vin: inputs,
+        vin: vin,
         ...raw
       }
     }
@@ -323,73 +325,106 @@ class PeercoinExplorer {
   }
 
   //transactionInfo = (id: string) => this.extendedRequest<TxInfo.Response>('txinfo', id)
-  transactionInfo = (id: string) => this.gettxRequest<Gettx.Response>('gettx', id)
+  //transactionInfo = (id: string) => this.gettxRequest<Gettx.Response>('gettx', id)
+  transactionInfo = (id: string) => cryptoid.privateApiRequest<TxInfo.Response>('txinfo', { t: id })//<TxInfo.Response>('txinfo', id)
   getAddress = (address: string) => this.extendedRequest<GetAddress.Response>('getaddress', address)
 
   getRelativeRawTransaction = async (id: string, address?: string): Promise<RawTransaction.Relative | Error> => {
+    console.log("JRM Start getRelativeRawTr")
     let [raw, info] = await Promise.all([
       this.getRawTransaction(id),
+            
       this.transactionInfo(id),
-    ])
-    if(isError(raw)){
-      return raw
-    }
-    if(isError(info)){
-      return info
-    }
-    let type: 'CREDIT' | 'DEBIT' | 'SELF_SEND' =
-      info.inputs.filter(i => i.addresses === address).length ?
-        'DEBIT' :
-        'CREDIT'
+     ])
+     if (isError(raw)) {
+       return raw
+     }
+        
+     if (isError(info)) {
+       return info
+     }
 
-    let addresses = dropRepeats( type === 'CREDIT' ?
-      //JRM
-      //console.log("CREDIT now trying to filter")
-      info.inputs.map(o => o.addresses).filter(a => a !== address) :
-      info.outputs.map(o => o.addresses).filter(a => a !== address)
-    )
-    if ((type === 'DEBIT') && !addresses.length){
-      type = 'SELF_SEND'
-    }
+     console.log("JRM getRelativeRawTr..", info)
+     //console.log("outputs vout ?", info.outputs )
+     //console.log("inputs vin ?", info.inputs)
+     //console.log(this.transactionInfo)
+     let type: 'CREDIT' | 'DEBIT' | 'SELF_SEND' =
+     //let type: 'CREDIT' | 'DEBIT' | 'SELF_SEND' = 'CREDIT'
+       info.inputs.filter(i => i.addresses === address).length ?
+         'DEBIT' :
+         'CREDIT'
+     console.log("Type", type)
+     console.log("outputs vout ?", info.outputs)
+     console.log("inputs vin ?", info.inputs)
+     //console.log(this.transactionInfo)
+      //console.log(info.vin.map(o => o.addresses).filter(a => a !== address))
+      //console.log(info.vout.map(o => o.addresses).filter(a => a !== address))
+
+        
+      let addresses = dropRepeats(type === 'CREDIT' ?
+        
+        info.inputs.map(o => o.addresses).filter(a => a !== address) :
+        info.outputs.map(o => o.addresses).filter(a => a !== address)
       
-    let inputTotal = info.inputs.reduce((total, i) => plus(total, i.amount), 0)
-    let fee = Satoshis.btc.toAmount(minus(inputTotal, info.total))
-    inputTotal = Satoshis.btc.toAmount(inputTotal)
-      return Object.assign(raw, { type, fee, inputTotal, addresses, block: info.block })
+      )
+      console.log("outputs o.addresses ?", info.outputs)
+      if ((type === 'DEBIT') && !addresses.length){
+      type = 'SELF_SEND'
+      }
+          
+      let inputTotal = info.inputs.reduce((total, i) => plus(total, i.amount), 0)
+      //jrm2let fee = Satoshis.btc.toAmount(minus(inputTotal, info.total))
+      let fee = 10
+      inputTotal = Satoshis.btc.toAmount(inputTotal)
+      return Object.assign(raw, { type, fee, inputTotal, addresses, blockindex: info.blockindex })
+      
   }
 
-  getRelativeTransaction = async (id: string, address: string) => {
-    let transaction = await this.getRelativeRawTransaction(id, address)
-    if (isError(transaction)){
-      return transaction
+    getRelativeTransaction = async (id: string, address: string) => {
+      console.log("JRM Start getRelativeTr")
+      let transaction = await this.getRelativeRawTransaction(id, address)
+      if (isError(transaction)){
+        return transaction
     }
     return normalize.transaction(address, transaction)
-  }
-
-  wallet = async (address: string, cached: Array<string> = []) => {
-    let [ resp, lastSeenBlock ] = await Promise.all([
-      this.getAddress(address),
-      this.apiRequest<number>('getblockcount', {})
-    ])
-    if(isError(lastSeenBlock)){
-      lastSeenBlock = 0
     }
-    if(isError(resp)){
-      if(resp.error === "address not found."){
-        return Wallet.empty(address, { lastSeenBlock })
+
+    wallet = async (address: string, cached: Array<string> = []) => {
+      console.log("JRM Start wallet async")
+      let [ resp, lastSeenBlock ] = await Promise.all([
+        this.getAddress(address),
+        this.apiRequest<number>('getblockcount', {})
+      
+      ])
+      console.log("JRM checking", address)
+      if(isError(lastSeenBlock)){
+        lastSeenBlock = 0
       }
-      throw Error(resp.error)
+      if(isError(resp)){
+        if(resp.error === "address not found."){
+          return Wallet.empty(address, { lastSeenBlock })
+        }
+        throw Error(resp.error)
     } else {
-      let transactions = await Promise.all(
+      //return Wallet.empty(address, { lastSeenBlock })
+      console.log("JRM address found on blockchain ", address, lastSeenBlock)
+      console.log("last_txs", resp.last_txs)
+      
+        let transactions = await Promise.all(
         resp.last_txs
-          .filter(txn => !cached.includes(txn.addresses))
-          .map(txn => this.getRelativeRawTransaction(txn.addresses, address))
-      )
-      let unspent = await defaultOnError(this.listUnspent(address), [])
+          
+         .filter(txn => !cached.includes(txn.addresses))
+         .map(txn => this.getRelativeRawTransaction(txn.addresses, address))
+      )         
+      //console.log("Transactions", transactions)
+      let unspent = await defaultOnError(cryptoid.listUnspent(address), [])
+      console.log("unspent", unspent)
+      //return Wallet.empty(address, { lastSeenBlock })
       // TODO retry sync, background sync? redux-offline?
       return normalize.wallet(
         resp,
-        transactions.filter(t => !isError(t)) as Array<RawTransaction.Relative>,
+        //transactions.filter(t => !isError(t)) as Array<RawTransaction.Relative>,
+        transactions as Array<RawTransaction.Relative>,
         unspent,
         lastSeenBlock
       )

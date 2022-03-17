@@ -147,7 +147,7 @@ class LoadPrivateKey extends React.Component<LoadPrivateKeyProps, State> {
         <Card >
           <CardItem styleNames='header'>
             <Body style={{...styles.row, paddingLeft: 0, paddingRight: 0 }}>
-              <H2 style={{ flexBasis: 200, paddingBottom: 15 }}>Import or Generate your Pandacoin Private Key</H2>
+              <H2 style={{ flexBasis: 200, paddingBottom: 15 }}>Import or Generate your Pandacoin Private Key  (v0.03)</H2>
             </Body>
           </CardItem>
           <CardItem>

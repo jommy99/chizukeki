@@ -19,7 +19,7 @@ namespace Wallet {
     amount: number,
     fee: number,
     id: string,
-    block: number,
+    blockindex: number,
     confirmations: number,
     timestamp: Date,
     raw?: {

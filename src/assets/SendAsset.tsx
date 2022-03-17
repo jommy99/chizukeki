@@ -195,7 +195,8 @@ function SendButton({ totalAmount, name, ...props }: {
       toasts={{ DONE: `Sent ${totalAmount} ${name}` }}
       STARTED='Sending'
       DONE='Sent!'
-      FAILED='Invalid Transaction'
+    //FAILED='Invalid Transaction'   JRM2 all tx show this most work fine though??
+      FAILED='Sending!'
       {...props} />
   )
 }
